@@ -1,6 +1,7 @@
 Welcome to Maxi OS 1.7
 The GP (Github Pages) link is"https://neomatrix531.github.io/Maxi-OS/OS.html"
 ___________________________________________
+Note 1:
 
 
 We're working a special project named Maxi OS. It's a simulated OS by html. We update everyday. We're always planning special releases. Click the button that says "websim.ai" and you can play games.
@@ -17,3 +18,9 @@ ___________________________________________
 
 
 Bye. -neomatrix531
+
+
+___________________________________________
+Note 2:
+
+⍢⍢⍢⍢⍢⍢⍢⍢ working on  game
