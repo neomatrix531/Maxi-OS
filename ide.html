@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini IDE</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; }
+    #editor { width: 100%; height: 200px; }
+    #output { background: #f1f1f1; padding: 10px; min-height: 50px; }
+    #run { padding: 8px 16px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Simple Online IDE</h2>
+  <textarea id="editor" placeholder="Write some HTML, CSS, or JS here..."></textarea>
+  <br>
+  <button id="run">Run Code</button>
+  <h3>Output:</h3>
+  <iframe id="output-frame" style="width:100%;height:200px;border:1px solid #ccc;"></iframe>
+  <script>
+    document.getElementById('run').onclick = function() {
+      const code = document.getElementById('editor').value;
+      const iframe = document.getElementById('output-frame');
+      iframe.srcdoc = code;
+    };
+  </script>
+</body>
+</html>
