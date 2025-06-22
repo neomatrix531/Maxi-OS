@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #palette div, #codeSpace div {
+      padding: 10px; margin: 5px;
+      background: lightblue; cursor: grab;
+      border: 1px solid #000;
+    }
+    #codeSpace {
+      min-height: 100px; background: #f0f0f0;
+    }
+    svg { border: 1px solid black; }
+  </style>
+</head>
+<body>
+  <h1>WebMake</h1>
+  <div id="palette">
+    <div draggable="true" data-action="move">Move Forward</div>
+    <div draggable="true" data-action="say">Say Hello</div>
+  </div>
+
+  <h3>Code Space</h3>
+  <div id="codeSpace"></div>
+
+  <button id="run">Green Flag</button>
+
+  <svg id="stage" width="400" height="300">
+    <circle id="sprite" cx="50" cy="150" r="20" fill="red" />
+  </svg>
+
+  <script>
+    // Drag and drop behavior
+    const palette = document.querySelectorAll('#palette div');
+    palette.forEach(block => {
+      block.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', e.target.dataset.action);
+      });
+    });
+
+    const codeSpace = document.getElementById('codeSpace');
+    codeSpace.addEventListener('dragover', e => e.preventDefault());
+    codeSpace.addEventListener('drop', e => {
+      e.preventDefault();
+      const action = e.dataTransfer.getData('text/plain');
+      const newBlock = document.createElement('div');
+      newBlock.textContent = action;
+      newBlock.dataset.action = action;
+      codeSpace.appendChild(newBlock);
+    });
+
+    // Green Flag button
+    document.getElementById('run').addEventListener('click', () => {
+      const blocks = codeSpace.querySelectorAll('div');
+      const sprite = document.getElementById('sprite');
+      let cx = parseInt(sprite.getAttribute('cx'));
+
+      blocks.forEach(block => {
+        if (block.dataset.action === 'move') {
+          cx += 20;
+          sprite.setAttribute('cx', cx);
+        } else if (block.dataset.action === 'say') {
+          alert('Hello!');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
