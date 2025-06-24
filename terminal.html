@@ -1,0 +1,226 @@
+<html>
+<head>
+    <title>MOS Terminal</title>
+    <style>
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #terminal {
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        #input-line {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        #prompt {
+            color: #0f0;
+            margin-right: 8px;
+        }
+
+        #command-input {
+            background: transparent;
+            border: none;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 16px;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        .output-line {
+            margin: 4px 0;
+            white-space: pre-wrap;
+        }
+
+        #cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #0f0;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <div class="output-line">MOS Terminal v1.0</div>
+        <div class="output-line">Type 'help' for available commands.</div>
+        <div id="output"></div>
+        <div id="input-line">
+            <span id="prompt">&gt;</span>
+            <input type="text" id="command-input" autofocus>
+            <div id="cursor"></div>
+        </div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const output = document.getElementById('output');
+        const input = document.getElementById('command-input');
+        const cursor = document.getElementById('cursor');
+
+        // Track installed packages and created files
+        const installedPackages = new Set();
+        const createdFiles = new Map();
+        const customFunctions = new Map();
+
+        const commands = {
+            help: () => `Available commands:
+help - Show this help message
+clear - Clear the terminal
+echo [text] - Display text
+date - Show current date and time
+whoami - Display current user
+install [package] - Install a package (available: nodejs, python, gcc, docker, rust)
+list - List installed packages
+build [project] - Build a project
+createfile [name] [content] - Create a new file
+listfiles - List all created files
+cat [filename] - View file contents
+function [name] [code] - Create a custom function
+runfunc [name] - Run a custom function`,
+
+            clear: () => {
+                output.innerHTML = '';
+                return '';
+            },
+            echo: (args) => args.join(' '),
+            date: () => new Date().toString(),
+            whoami: () => 'user@localhost',
+
+            install: (args) => {
+                const availablePackages = ['nodejs', 'python', 'gcc', 'docker', 'rust'];
+                const package = args[0]?.toLowerCase();
+                
+                if (!package) return 'Usage: install [package]';
+                if (!availablePackages.includes(package)) {
+                    return `Package "${package}" not found. Available packages: ${availablePackages.join(', ')}`;
+                }
+                if (installedPackages.has(package)) {
+                    return `Package "${package}" is already installed.`;
+                }
+                
+                installedPackages.add(package);
+                return `Installing ${package}...\nPackage "${package}" has been successfully installed.`;
+            },
+
+            list: () => {
+                if (installedPackages.size === 0) return 'No packages installed.';
+                return `Installed packages:\n${Array.from(installedPackages).join('\n')}`;
+            },
+
+            build: (args) => {
+                const project = args[0];
+                if (!project) return 'Usage: build [project]';
+                
+                const requiredPackages = {
+                    'web': ['nodejs'],
+                    'app': ['gcc'],
+                    'container': ['docker'],
+                    'script': ['python']
+                };
+
+                if (!requiredPackages[project]) {
+                    return `Unknown project type. Available types: ${Object.keys(requiredPackages).join(', ')}`;
+                }
+
+                const missing = requiredPackages[project].filter(pkg => !installedPackages.has(pkg));
+                if (missing.length > 0) {
+                    return `Error: Missing required packages. Please install: ${missing.join(', ')}`;
+                }
+
+                return `Building ${project}...\nBuild completed successfully.`;
+            },
+
+            createfile: (args) => {
+                const [filename, ...content] = args;
+                if (!filename) return 'Usage: createfile [filename] [content]';
+                
+                createdFiles.set(filename, content.join(' ') || '(empty file)');
+                return `File "${filename}" has been created.`;
+            },
+
+            listfiles: () => {
+                if (createdFiles.size === 0) return 'No files exist.';
+                return `Files:\n${Array.from(createdFiles.keys()).join('\n')}`;
+            },
+
+            cat: (args) => {
+                const filename = args[0];
+                if (!filename) return 'Usage: cat [filename]';
+                if (!createdFiles.has(filename)) return `File "${filename}" not found.`;
+                return `Content of ${filename}:\n${createdFiles.get(filename)}`;
+            },
+
+            function: (args) => {
+                const [name, ...code] = args;
+                if (!name || code.length === 0) return 'Usage: function [name] [code]';
+                
+                customFunctions.set(name, code.join(' '));
+                return `Function "${name}" has been created.`;
+            },
+
+            runfunc: (args) => {
+                const name = args[0];
+                if (!name) return 'Usage: runfunc [name]';
+                if (!customFunctions.has(name)) return `Function "${name}" not found.`;
+                return `Executing function "${name}":\n> ${customFunctions.get(name)}`;
+            }
+        };
+
+        input.addEventListener('input', () => {
+            cursor.style.left = `${input.value.length * 8}px`;
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const command = input.value.trim().toLowerCase();
+                const parts = command.split(' ');
+                const cmd = parts[0];
+                const args = parts.slice(1);
+
+                const outputLine = document.createElement('div');
+                outputLine.className = 'output-line';
+                outputLine.textContent = `> ${command}`;
+                output.appendChild(outputLine);
+
+                if (commands[cmd]) {
+                    const result = commands[cmd](args);
+                    if (result) {
+                        const responseLine = document.createElement('div');
+                        responseLine.className = 'output-line';
+                        responseLine.textContent = result;
+                        output.appendChild(responseLine);
+                    }
+                } else if (command) {
+                    const errorLine = document.createElement('div');
+                    errorLine.className = 'output-line';
+                    errorLine.textContent = `Command not found: ${cmd}`;
+                    output.appendChild(errorLine);
+                }
+
+                input.value = '';
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        });
+
+        input.focus();
+        window.addEventListener('click', () => input.focus());
+    </script>
+</body>
+</html>
