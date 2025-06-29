@@ -1,0 +1,89 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxi OS</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.1/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.1/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="desktop">
+        <!-- Apps and tabs will go here later -->
+        <!-- App icon for Maxi IDE -->
+        <div class="app-icon" id="maxi-ide-icon">
+            <img src="ide_icon.png" alt="Maxi IDE" class="app-icon-img">
+            <span>Maxi IDE</span>
+        </div>
+
+        <!-- App icon for Maxi OS Explorer -->
+        <div class="app-icon" id="maxi-explorer-icon" style="top: 120px;"> <!-- Position below IDE icon -->
+            <img src="explorer_icon.png" alt="Maxi OS Explorer" class="app-icon-img">
+            <span>Maxi OS Explorer</span>
+        </div>
+
+        <!-- App icon for mcr.home -->
+        <div class="app-icon" id="mcr-home-icon" style="top: 220px;"> <!-- Position below Explorer icon -->
+            <img src="explorer_icon.png" alt="mcr.home" class="app-icon-img">
+            <span>mcr.home</span>
+        </div>
+
+        <!-- App icon for MOS Terminal 1.0 -->
+        <div class="app-icon" id="mos-terminal-icon" style="top: 320px;"> <!-- Position below mcr.home icon -->
+            <img src="ide_icon.png" alt="MOS Terminal 1.0" class="app-icon-img">
+            <span>MOS Terminal 1.0</span>
+        </div>
+
+        <!-- App Window for Maxi IDE -->
+        <div class="app-window" id="maxi-ide-window" style="display: none;">
+            <div class="app-window-titlebar">
+                <span class="app-window-title">Maxi IDE</span>
+                <button class="app-window-close-button" id="maxi-ide-close">X</button>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://neomatrix531.github.io/Maxi-OS/ide.html" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <!-- App Window for Maxi OS Explorer -->
+        <div class="app-window" id="maxi-explorer-window" style="display: none;">
+            <div class="app-window-titlebar">
+                <span class="app-window-title">Maxi OS Explorer</span>
+                <button class="app-window-close-button" id="maxi-explorer-close">X</button>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://neomatrix531.github.io/Maxi-OS/OS.html" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <!-- App Window for mcr.home -->
+        <div class="app-window" id="mcr-home-window" style="display: none;">
+            <div class="app-window-titlebar">
+                <span class="app-window-title">mcr.home</span>
+                <button class="app-window-close-button" id="mcr-home-close">X</button>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://neomatrix531.github.io/Maxi-OS/Maxi%20Chrome%20ReWritten%20(WEB).html" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <!-- App Window for MOS Terminal 1.0 -->
+        <div class="app-window" id="mos-terminal-window" style="display: none;">
+            <div class="app-window-titlebar">
+                <span class="app-window-title">MOS Terminal 1.0</span>
+                <button class="app-window-close-button" id="mos-terminal-close">X</button>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://neomatrix531.github.io/Maxi-OS/terminal.html" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
