@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node List Engineer</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
+    #toolbar { background: #222; color: #fff; padding: 10px; display: flex; gap: 10px; align-items: center; }
+    #canvas { position: relative; width: 100vw; height: calc(100vh - 50px); overflow: auto; background: #e9ecef; }
+    .node {
+      position: absolute;
+      min-width: 180px;
+      background: #fff;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 10px;
+      cursor: grab;
+      user-select: none;
+    }
+    .node-header {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .node-list {
+      width: 100%;
+      min-height: 40px;
+      margin-bottom: 5px;
+      background: #f8f9fa;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 4px;
+      font-size: 14px;
+      resize: vertical;
+    }
+    .node-footer { display: flex; gap: 5px; }
+    .connection {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+    }
+    button, input[type="file"] {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { background: #0056b3; }
+    input[type="file"] { padding: 0; }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <button onclick="addNode()">Add Node</button>
+    <button onclick="saveNodes()">Save</button>
+    <button onclick="loadNodes()">Load</button>
+    <button onclick="exportJSON()">Export JSON</button>
+    <label style="margin:0;">
+      <input type="file" id="importFile" style="display:none" onchange="importJSON(event)">
+      <button onclick="document.getElementById('importFile').click()">Import JSON</button>
+    </label>
+  </div>
+  <div id="canvas"></div>
+  <svg id="connections" class="connection"></svg>
+  <script>
+    let nodes = [];
+    let connections = [];
+    let nodeId = 1;
+    let draggingNode = null, offsetX = 0, offsetY = 0;
+    let connectingFrom = null;
+
+    function addNode(x = 100, y = 100, title = `Node ${nodeId}`, list = []) {
+      const id = nodeId++;
+      nodes.push({ id, x, y, title, list });
+      renderNodes();
+    }
+
+    function renderNodes() {
+      const canvas = document.getElementById('canvas');
+      canvas.innerHTML = '';
+      nodes.forEach(node => {
+        const div = document.createElement('div');
+        div.className = 'node';
+        div.style.left = node.x + 'px';
+        div.style.top = node.y + 'px';
+        div.setAttribute('data-id', node.id);
+        div.onmousedown = e => startDrag(e, node.id);
+        div.innerHTML = `
+          <div class="node-header">
+            <input value="${node.title}" onchange="updateTitle(${node.id}, this.value)" style="width: 80px; font-weight:bold; border:none; background:transparent;">
+            <button onclick="deleteNode(${node.id})" style="background:#dc3545;">&times;</button>
+          </div>
+          <textarea class="node-list" onchange="updateList(${node.id}, this.value)" placeholder='Enter list, one item per line'>${node.list.join('\n')}</textarea>
+          <div class="node-footer">
+            <button onclick="startConnect(${node.id})">Connect</button>
+          </div>
+        `;
+        canvas.appendChild(div);
+      });
+      renderConnections();
+    }
+
+    function updateTitle(id, value) {
+      const node = nodes.find(n => n.id === id);
+      if (node) node.title = value;
+    }
+    function updateList(id, value) {
+      const node = nodes.find(n => n.id === id);
+      if (node) node.list = value.split('\n').filter(x => x.trim() !== '');
+    }
+    function deleteNode(id) {
+      nodes = nodes.filter(n => n.id !== id);
+      connections = connections.filter(c => c.from !== id && c.to !== id);
+      renderNodes();
+    }
+    function startDrag(e, id) {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+      draggingNode = id;
+      const node = nodes.find(n => n.id === id);
+      offsetX = e.clientX - node.x;
+      offsetY = e.clientY - node.y;
+      document.onmousemove = drag;
+      document.onmouseup = stopDrag;
+    }
+    function drag(e) {
+      if (draggingNode) {
+        const node = nodes.find(n => n.id === draggingNode);
+        node.x = e.clientX - offsetX;
+        node.y = e.clientY - offsetY;
+        renderNodes();
+      }
+    }
+    function stopDrag() {
+      draggingNode = null;
+      document.onmousemove = null;
+      document.onmouseup = null;
+    }
+    function startConnect(id) {
+      if (connectingFrom === null) {
+        connectingFrom = id;
+      } else if (connectingFrom !== id) {
+        connections.push({ from: connectingFrom, to: id });
+        connectingFrom = null;
+        renderConnections();
+      }
+    }
+    function renderConnections() {
+      const svg = document.getElementById('connections');
+      svg.innerHTML = '';
+      svg.setAttribute('width', window.innerWidth);
+      svg.setAttribute('height', window.innerHeight);
+      connections.forEach(conn => {
+        const fromNode = nodes.find(n => n.id === conn.from);
+        const toNode = nodes.find(n => n.id === conn.to);
+        if (fromNode && toNode) {
+          const x1 = fromNode.x + 90, y1 = fromNode.y + 20;
+          const x2 = toNode.x + 90, y2 = toNode.y + 20;
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          path.setAttribute('x1', x1);
+          path.setAttribute('y1', y1);
+          path.setAttribute('x2', x2);
+          path.setAttribute('y2', y2);
+          path.setAttribute('stroke', '#007bff');
+          path.setAttribute('stroke-width', '3');
+          svg.appendChild(path);
+        }
+      });
+    }
+    function saveNodes() {
+      localStorage.setItem('nodes', JSON.stringify(nodes));
+      localStorage.setItem('connections', JSON.stringify(connections));
+      alert('Nodes saved!');
+    }
+    function loadNodes() {
+      const n = JSON.parse(localStorage.getItem('nodes') || '[]');
+      const c = JSON.parse(localStorage.getItem('connections') || '[]');
+      nodes = n;
+      connections = c;
+      nodeId = nodes.reduce((max, n) => Math.max(max, n.id), 0) + 1;
+      renderNodes();
+    }
+    function exportJSON() {
+      const data = JSON.stringify({ nodes, connections }, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nodes.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          nodes = data.nodes || [];
+          connections = data.connections || [];
+          nodeId = nodes.reduce((max, n) => Math.max(max, n.id), 0) + 1;
+          renderNodes();
+        } catch (err) {
+          alert('Invalid JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+    window.onload = () => {
+      loadNodes();
+    };
+    window.onresize = renderConnections;
+  </script>
+</body>
+</html>
