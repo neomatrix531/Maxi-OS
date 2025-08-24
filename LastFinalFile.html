@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Maxi OS: Genesis Edition</title>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/webxr/VRButton.js"></script>
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background: #000; color: white; }
+    #terminal { display: none; position: absolute; top: 10px; left: 10px; background: #111; padding: 10px; border: 1px solid #444; }
+    #launch-btn { position: absolute; top: 10px; right: 10px; padding: 10px; background: #222; color: white; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="terminal">🧠 PyScript Terminal Active</div>
+  <button id="launch-btn">Launch Terminal</button>
+
+  <py-script>
+from js import document
+
+def launch_terminal(event=None):
+    terminal = document.getElementById("terminal")
+    terminal.style.display = "block"
+
+launch_button = document.getElementById("launch-btn")
+launch_button.addEventListener("click", launch_terminal)
+  </py-script>
+
+  <script>
+    // 🎤 Voice Command Setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.onresult = (event) => {
+      const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+      if (transcript.includes("launch terminal")) {
+        document.getElementById("terminal").style.display = "block";
+      }
+    };
+    recognition.start();
+
+    // 🕶️ VR Scene Setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
+    document.body.appendChild(renderer.domElement);
+    document.body.appendChild(VRButton.createButton(renderer));
+
+    camera.position.z = 5;
+
+    // 🧱 Floating Dock
+    const dock = new THREE.Mesh(
+      new THREE.BoxGeometry(2, 0.5, 0.1),
+      new THREE.MeshBasicMaterial({ color: 0x2222ff })
+    );
+    dock.position.set(0, 1.5, -2);
+    scene.add(dock);
+
+    // 🌀 AI Orb
+    const orb = new THREE.Mesh(
+      new THREE.SphereGeometry(0.3, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0xff00ff })
+    );
+    orb.position.set(-1, 1.5, -2);
+    scene.add(orb);
+
+    // 🧠 Animate Scene
+    function animate() {
+      renderer.setAnimationLoop(() => {
+        orb.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      });
+    }
+    animate();
+  </script>
+</body>
+</html>
