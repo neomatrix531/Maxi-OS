@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goofy Ahh Search Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to the Goofy Ahh Search Engine</h1>
+    <p>Type your query below and hit search!</p>
+    
+    <form id="searchForm" onsubmit="return performSearch();">
+        <input type="text" id="query" placeholder="Enter your search here..." required>
+        <input type="submit" value="Search">
+    </form>
+
+    <div id="results" style="margin-top: 20px;"></div>
+
+    <script>
+        function performSearch() {
+            // Get the search query from the input field
+            var query = document.getElementById('query').value;
+
+            // Display the search results in the results div
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = "<h2>Search Results for: " + query + "</h2>";
+            resultsDiv.innerHTML += "<p>Goofy Ahh Search Engine found some goofy results!</p>";
+
+            // Prevent the form from submitting
+            return false;
+        }
+    </script>
+
+</body>
+</html>
