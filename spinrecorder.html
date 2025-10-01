@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Windows 7 Design Demo</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #e4e9ef 0%, #cfd8e6 100%);
+      font-family: Segoe UI, Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+    }
+    .win7-window {
+      position: absolute;
+      top: 60px;
+      left: 120px;
+      width: 350px;
+      border-radius: 6px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+      border: 1px solid #b3b3b3;
+      background: linear-gradient(to bottom, #f7fbff 0%, #e9f1fa 100%);
+      overflow: hidden;
+    }
+    .win7-titlebar {
+      background: linear-gradient(to bottom, #dbeefd 0%, #b6d6f2 100%);
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      border-bottom: 1px solid #b3b3b3;
+      position: relative;
+    }
+    .win7-icon {
+      width: 20px;
+      height: 20px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/6/6a/Windows_Explorer_Icon.png') no-repeat center/contain;
+      margin-right: 6px;
+    }
+    .win7-title {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 600;
+      color: #144e82;
+    }
+    .win7-buttons {
+      display: flex;
+      gap: 4px;
+    }
+    .win7-btn {
+      width: 18px;
+      height: 18px;
+      border: none;
+      background: transparent;
+      border-radius: 2px;
+      margin-left: 2px;
+      position: relative;
+    }
+    .win7-btn.win7-min::before {
+      content: '';
+      display: block;
+      width: 10px;
+      height: 2px;
+      background: #333;
+      position: absolute;
+      top: 13px; left: 4px;
+    }
+    .win7-btn.win7-max::before {
+      content: '';
+      display: block;
+      width: 10px;
+      height: 8px;
+      border: 2px solid #333;
+      position: absolute;
+      top: 6px; left: 2px;
+    }
+    .win7-btn.win7-close {
+      background: #e81123;
+    }
+    .win7-btn.win7-close::before {
+      content: '';
+      display: block;
+      width: 10px;
+      height: 2px;
+      background: #fff;
+      position: absolute;
+      top: 8px; left: 4px;
+      transform: rotate(45deg);
+    }
+    .win7-btn.win7-close::after {
+      content: '';
+      display: block;
+      width: 10px;
+      height: 2px;
+      background: #fff;
+      position: absolute;
+      top: 8px; left: 4px;
+      transform: rotate(-45deg);
+    }
+    .win7-content {
+      padding: 16px;
+      background: #f5faff;
+      color: #222;
+      min-height: 60px;
+    }
+    .win7-taskbar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 42px;
+      background: linear-gradient(to top, #457abe 0%, #70a6e5 100%);
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 100;
+    }
+    .win7-start {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(to bottom, #e5f3ff 0%, #c8e4fc 100%);
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      padding: 2px 12px 2px 4px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+    .win7-start-icon {
+      width: 28px;
+      height: 28px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/4/4e/Windows_logo_-_2012.svg') no-repeat center/contain;
+      margin-right: 7px;
+    }
+    .win7-start-text {
+      font-size: 17px;
+      color: #144e82;
+      font-weight: 700;
+    }
+    .win7-taskbar-apps {
+      display: flex;
+      gap: 8px;
+      margin-right: auto;
+    }
+    .win7-taskbar-app {
+      width: 32px;
+      height: 32px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/6/6a/Windows_Explorer_Icon.png') no-repeat center/contain;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.13);
+      background-color: #fff;
+    }
+    .win7-taskbar-clock {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 0 10px;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="win7-window">
+    <div class="win7-titlebar">
+      <span class="win7-icon"></span>
+      <span class="win7-title">My Computer</span>
+      <div class="win7-buttons">
+        <button class="win7-btn win7-min"></button>
+        <button class="win7-btn win7-max"></button>
+        <button class="win7-btn win7-close"></button>
+      </div>
+    </div>
+    <div class="win7-content">
+      <p>SpinRecorder</p>
+    </div>
+  </div>
+  <div class="win7-taskbar">
+    <div class="win7-start">
+      <span class="win7-start-icon"></span>
+      <span class="win7-start-text">Start</span>
+    </div>
+    <div class="win7-taskbar-apps">
+      <span class="win7-taskbar-app"></span>
+      <span class="win7-taskbar-app"></span>
+    </div>
+    <div class="win7-taskbar-clock">21:10</div>
+  </div>
+</body>
+</html>
